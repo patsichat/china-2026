@@ -1,0 +1,743 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>China — TBD</title>
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/leaflet.min.css" />
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,400;9..144,500;9..144,600&family=IBM+Plex+Sans:wght@400;500;600&family=IBM+Plex+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --midnight: #16233a;
+    --midnight-deep: #0e1830;
+    --panel: #1e304d;
+    --birch: #f4efe4;
+    --birch-dim: #cbd3e0;
+    --aurora-a: #6fe3c4;
+    --aurora-b: #9bd97f;
+    --accent-a: #f6c945;
+    --accent-b: #e0645a;
+    --accent-c: #e6857e;
+    --line: rgba(244,239,228,0.14);
+  }
+  *{box-sizing:border-box;}
+  html,body{margin:0;padding:0;}
+  body{
+    background: var(--midnight);
+    color: var(--birch);
+    font-family:'IBM Plex Sans', sans-serif;
+    -webkit-font-smoothing: antialiased;
+    padding-bottom: calc(72px + env(safe-area-inset-bottom));
+  }
+  .wrap{max-width: 920px; margin: 0 auto; padding: 0 24px 100px;}
+
+  /* HERO */
+  .hero{
+    position:relative;
+    padding: 80px 24px 60px;
+    text-align:center;
+    overflow:hidden;
+    background:
+      radial-gradient(ellipse at 30% 0%, rgba(111,227,196,0.14), transparent 55%),
+      radial-gradient(ellipse at 75% 15%, rgba(155,217,127,0.10), transparent 50%),
+      linear-gradient(180deg, rgba(14,24,48,0.88), rgba(14,24,48,0.96) 70%, var(--midnight-deep) 100%),
+      linear-gradient(160deg, #1a2a44, #0e1830);
+    border-bottom: 1px solid var(--line);
+  }
+  .hero .eyebrow{
+    font-family:'IBM Plex Mono', monospace;
+    letter-spacing: 0.22em;
+    text-transform: uppercase;
+    font-size: 12px;
+    color: var(--birch-dim);
+    margin-bottom: 18px;
+  }
+  .hero h1{
+    font-family:'Fraunces', serif;
+    font-weight: 500;
+    font-size: clamp(36px, 6vw, 64px);
+    line-height: 1.05;
+    margin: 0 0 18px;
+    letter-spacing: -0.01em;
+  }
+  .hero h1 .grad{
+    background: linear-gradient(90deg, var(--aurora-a), var(--aurora-b));
+    -webkit-background-clip: text;
+    background-clip: text;
+    color: transparent;
+  }
+  .hero p.sub{
+    font-size: 16px;
+    color: var(--birch-dim);
+    max-width: 520px;
+    margin: 0 auto;
+    line-height: 1.6;
+  }
+  .route-chain{
+    display:flex;
+    justify-content:center;
+    align-items:center;
+    gap: 6px;
+    flex-wrap: wrap;
+    margin-top: 32px;
+    font-family:'IBM Plex Mono', monospace;
+    font-size: 13px;
+    color: var(--birch-dim);
+  }
+  .route-chain .city{
+    padding: 5px 12px;
+    border: 1px solid var(--line);
+    border-radius: 100px;
+  }
+  .route-chain .arrow{ opacity: 0.4; }
+
+  /* TAB BAR (bottom nav) */
+  .tab-bar{
+    position: fixed;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    z-index: 20;
+    display:flex;
+    justify-content:center;
+    gap: 4px;
+    padding: 8px 16px calc(8px + env(safe-area-inset-bottom));
+    background: rgba(14,24,48,0.92);
+    backdrop-filter: blur(8px);
+    border-top: 1px solid var(--line);
+    box-shadow: 0 -4px 20px rgba(0,0,0,0.25);
+  }
+  .tab-btn{
+    flex: 1;
+    max-width: 140px;
+    display:flex;
+    flex-direction: column;
+    align-items:center;
+    justify-content:center;
+    gap: 3px;
+    font-family:'IBM Plex Mono', monospace;
+    font-size: 11px;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    color: var(--birch-dim);
+    background: transparent;
+    border: 1px solid transparent;
+    padding: 8px 6px;
+    border-radius: 14px;
+    cursor: pointer;
+    transition: color 0.2s ease, background 0.2s ease, border-color 0.2s ease;
+    -webkit-tap-highlight-color: transparent;
+  }
+  .tab-btn .icon{ font-size: 18px; line-height: 1; }
+  .tab-btn:hover{ color: var(--birch); }
+  .tab-btn.active{
+    color: var(--midnight-deep);
+    background: linear-gradient(90deg, var(--aurora-a), var(--aurora-b));
+    border-color: transparent;
+    font-weight: 600;
+  }
+  .tab-panel{ display:none; }
+  .tab-panel.active{ display:block; }
+
+  /* MAP */
+  .map-section{ padding: 48px 24px 0; }
+  #map{
+    height: 420px;
+    width: 100%;
+    border-radius: 14px;
+    border: 1px solid var(--line);
+    filter: saturate(0.85);
+  }
+  @media (max-width: 560px){
+    #map{ height: 280px; }
+  }
+  .leaflet-container{ background: #142238 !important; font-family:'IBM Plex Sans', sans-serif; }
+
+  /* SECTION HEADS */
+  .section-title{
+    font-family:'IBM Plex Mono', monospace;
+    letter-spacing: 0.18em;
+    text-transform: uppercase;
+    font-size: 12px;
+    color: var(--birch-dim);
+    margin: 64px 0 24px;
+    display:flex;
+    align-items:center;
+    gap: 12px;
+  }
+  .section-title::after{
+    content:"";
+    flex:1;
+    height:1px;
+    background: var(--line);
+  }
+
+  /* TIMELINE */
+  .timeline{ position: relative; padding-left: 28px; }
+  .timeline::before{
+    content:"";
+    position:absolute;
+    left: 7px; top: 6px; bottom: 6px;
+    width: 2px;
+    background: linear-gradient(180deg, var(--aurora-a), var(--accent-b) 40%, var(--accent-c) 75%, var(--aurora-b));
+    opacity: 0.5;
+  }
+  .leg{ margin-bottom: 44px; }
+  .leg-head{
+    display:flex;
+    align-items:baseline;
+    gap: 12px;
+    margin-bottom: 14px;
+    position: relative;
+  }
+  .leg-head::before{
+    content:"";
+    position:absolute;
+    left: -28px;
+    top: 6px;
+    width: 10px; height: 10px;
+    border-radius: 50%;
+    background: var(--dot, var(--aurora-a));
+    box-shadow: 0 0 0 4px var(--midnight), 0 0 12px var(--dot, var(--aurora-a));
+  }
+  .leg-city{
+    font-family:'Fraunces', serif;
+    font-size: 26px;
+    font-weight: 500;
+  }
+  .leg-flag{ font-size: 20px; }
+  .leg-dates{
+    font-family:'IBM Plex Mono', monospace;
+    font-size: 12px;
+    color: var(--birch-dim);
+  }
+  .leg-image{
+    height: 200px;
+    border-radius: 12px;
+    background-size: cover;
+    background-position: center;
+    background-color: var(--panel);
+    border: 1px solid var(--line);
+    margin: 0 0 20px;
+    filter: saturate(0.9);
+  }
+  .day-image{
+    height: 140px;
+    border-radius: 10px;
+    background-size: cover;
+    background-position: center;
+    background-color: var(--panel);
+    border: 1px solid var(--line);
+    margin: 0 0 14px;
+    filter: saturate(0.9);
+  }
+  @media (max-width: 560px){
+    .leg-image{ height: 150px; }
+    .day-image{ height: 110px; }
+  }
+
+  .day{
+    border-bottom: 1px solid var(--line);
+  }
+  .day:last-child{ border-bottom: none; }
+  .day > summary{
+    display:grid;
+    grid-template-columns: 78px 1fr 20px;
+    gap: 16px;
+    padding: 16px 0;
+    align-items: center;
+    cursor: pointer;
+    list-style: none;
+  }
+  .day > summary::-webkit-details-marker{ display:none; }
+  .day > summary::marker{ content:""; }
+  .day .date{
+    font-family:'IBM Plex Mono', monospace;
+    font-size: 13px;
+    color: var(--dot, var(--aurora-a));
+    font-weight: 500;
+  }
+  .day .plan{ font-size: 14.5px; line-height: 1.5; }
+  .day .sleep{
+    display:block;
+    margin-top: 3px;
+    font-size: 12px;
+    color: var(--birch-dim);
+  }
+  .day .chevron{
+    color: var(--birch-dim);
+    transition: transform 0.2s ease;
+    justify-self: end;
+  }
+  .day[open] .chevron{ transform: rotate(180deg); }
+  .day-detail{
+    padding: 0 0 20px 94px;
+  }
+  .day-detail ul{ margin:0; padding-left: 16px; }
+  .day-detail li{
+    font-size: 13.5px;
+    line-height: 1.6;
+    color: var(--birch-dim);
+    margin-bottom: 6px;
+  }
+  .day-detail li b{ color: var(--birch); font-weight: 500; }
+  @media (max-width: 560px){
+    .day-detail{ padding-left: 0; }
+  }
+
+  /* BOOKING */
+  .booking-group-title{
+    font-family:'IBM Plex Mono', monospace;
+    font-size: 12px;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    color: var(--birch-dim);
+    margin: 36px 0 4px;
+  }
+  .booking-group-title:first-of-type{ margin-top: 0; }
+  .booking-list{ display: flex; flex-direction: column; }
+  .booking-row{
+    display: grid;
+    grid-template-columns: 4px 1fr auto;
+    gap: 20px;
+    align-items: start;
+    padding: 22px 0;
+    border-bottom: 1px solid var(--line);
+  }
+  .booking-row:last-child{ border-bottom: none; }
+  .booking-row .dot{
+    align-self: stretch;
+    width: 4px;
+    border-radius: 2px;
+    background: var(--dot, var(--aurora-a));
+  }
+  .booking-row .city{
+    font-family:'Fraunces', serif;
+    font-size: 20px;
+    font-weight: 500;
+    margin-bottom: 4px;
+  }
+  .booking-row .nights{
+    font-family:'IBM Plex Mono', monospace;
+    font-size: 12px;
+    color: var(--dot, var(--aurora-a));
+    margin-bottom: 14px;
+  }
+  .booking-row .fields{
+    display: flex;
+    flex-wrap: wrap;
+    gap: 4px 28px;
+  }
+  .booking-row .field{
+    display:flex;
+    gap: 6px;
+    font-size: 13.5px;
+    color: var(--birch-dim);
+  }
+  .booking-row .field span::after{ content: ":"; }
+  .booking-row .field b{ color: var(--birch); font-weight: 500; }
+  .booking-row .status{
+    justify-self: end;
+    white-space: nowrap;
+    font-family:'IBM Plex Mono', monospace;
+    font-size: 11px;
+    letter-spacing: 0.06em;
+    text-transform: uppercase;
+    color: var(--birch-dim);
+    padding-top: 2px;
+  }
+  @media (max-width: 640px){
+    .booking-row{ grid-template-columns: 4px 1fr; }
+    .booking-row .status{ grid-column: 2; justify-self: start; padding-top: 8px; }
+  }
+
+  /* BUDGET */
+  .budget-table-wrap{
+    overflow-x: auto;
+    -webkit-overflow-scrolling: touch;
+  }
+  .budget-table{
+    width: 100%;
+    min-width: 480px;
+    border-collapse: collapse;
+  }
+  .budget-table th{
+    font-family:'IBM Plex Mono', monospace;
+    font-size: 11px;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    color: var(--birch-dim);
+    text-align: left;
+    padding: 12px 0;
+    border-bottom: 1px solid var(--line);
+  }
+  .budget-table th:last-child, .budget-table td:last-child{ text-align: right; }
+  .budget-table td{
+    padding: 13px 0;
+    font-size: 14px;
+    border-bottom: 1px solid var(--line);
+  }
+  .budget-table td.cat{ font-weight: 500; }
+  .budget-table td.note{ color: var(--birch-dim); font-size: 12.5px; }
+  .budget-table tr:last-child td{ border-bottom: none; }
+  .budget-table tr.total td{
+    font-family:'IBM Plex Mono', monospace;
+    font-weight: 600;
+    font-size: 15px;
+    color: var(--aurora-a);
+    border-top: 2px solid var(--line);
+    padding-top: 16px;
+  }
+  .budget-caption{
+    font-size: 12.5px;
+    color: var(--birch-dim);
+    margin-top: 14px;
+    line-height: 1.6;
+  }
+  @media (max-width: 560px){
+    .budget-table{ min-width: 0; }
+    .budget-table thead{ display: none; }
+    .budget-table tbody, .budget-table tr{ display: block; }
+    .budget-table tr{
+      display: grid;
+      grid-template-columns: 1fr auto;
+      column-gap: 12px;
+      row-gap: 3px;
+      padding: 13px 0;
+      border-bottom: 1px solid var(--line);
+    }
+    .budget-table td{ display: block; padding: 0; border-bottom: none; grid-column: 1; }
+    .budget-table td.note{ grid-column: 1 / -1; }
+    .budget-table td:last-child{ grid-column: 2; grid-row: 1; text-align: right; }
+    .budget-table tr.total{ padding-top: 16px; border-top: 2px solid var(--line); }
+    .budget-table tr.total td{ padding-top: 0; border-top: none; }
+  }
+
+  /* NOTES */
+  .notes{
+    background: var(--panel);
+    border: 1px solid var(--line);
+    border-radius: 14px;
+    padding: 28px 26px;
+  }
+  .notes h3{
+    font-family:'Fraunces', serif;
+    font-weight: 500;
+    font-size: 20px;
+    margin: 0 0 16px;
+  }
+  .notes ul{ margin:0; padding-left: 18px; }
+  .notes li{ margin-bottom: 12px; line-height: 1.6; font-size: 14.5px; color: var(--birch); }
+  .notes li b{ color: var(--aurora-a); font-weight: 600; }
+
+  footer{
+    text-align:center;
+    padding: 40px 24px 0;
+    color: var(--birch-dim);
+    font-family:'IBM Plex Mono', monospace;
+    font-size: 11px;
+    letter-spacing: 0.08em;
+  }
+
+  @media (max-width: 560px){
+    .day > summary{ grid-template-columns: 56px 1fr 16px; gap: 10px; padding: 14px 0; }
+    .leg-city{ font-size: 22px; }
+    .hero{ padding: 56px 20px 44px; }
+    .wrap{ padding: 0 16px 80px; }
+    .map-section{ padding: 32px 16px 0; }
+    .notes{ padding: 20px 18px; }
+  }
+</style>
+</head>
+<body>
+
+<div class="hero">
+  <div class="eyebrow">Bangkok → China Loop → Bangkok</div>
+  <h1>Days Across <span class="grad">China</span></h1>
+  <p class="sub">TBD — itinerary, dates, and route not finalized yet. Fill in cities and dates once the trip plan is set.</p>
+  <div class="route-chain">
+    <span class="city">City 1</span><span class="arrow">→</span>
+    <span class="city">City 2</span><span class="arrow">→</span>
+    <span class="city">City 3</span>
+  </div>
+</div>
+
+<nav class="tab-bar">
+  <button class="tab-btn active" data-tab="itinerary"><span class="icon">🗺️</span>Itinerary</button>
+  <button class="tab-btn" data-tab="booking"><span class="icon">🧾</span>Booking List</button>
+  <button class="tab-btn" data-tab="budget"><span class="icon">💰</span>Budget</button>
+</nav>
+
+<div id="panel-itinerary" class="tab-panel active">
+
+<div class="map-section wrap">
+  <div id="map"></div>
+</div>
+
+<div class="wrap">
+
+  <div class="section-title">Day by day</div>
+
+  <div class="timeline">
+
+    <div class="leg" style="--dot: var(--accent-a)">
+      <div class="leg-head">
+        <span class="leg-flag">🇨🇳</span>
+        <span class="leg-city">City 1</span>
+        <span class="leg-dates">TBD</span>
+      </div>
+      <div class="leg-image"></div>
+      <details class="day">
+        <summary>
+          <div class="date">TBD</div>
+          <div class="plan">✈️ BKK → City 1 (TODO: เที่ยวบิน/เวลา)<span class="sleep">🇨🇳 City 1</span></div>
+          <span class="chevron">▾</span>
+        </summary>
+        <div class="day-detail">
+          <ul>
+            <li>TODO: เติมแผนวันแรกหลังถึงที่หมาย</li>
+          </ul>
+        </div>
+      </details>
+    </div>
+
+    <div class="leg" style="--dot: var(--accent-b)">
+      <div class="leg-head">
+        <span class="leg-flag">🇨🇳</span>
+        <span class="leg-city">City 2</span>
+        <span class="leg-dates">TBD</span>
+      </div>
+      <div class="leg-image"></div>
+      <details class="day">
+        <summary>
+          <div class="date">TBD</div>
+          <div class="plan">TODO: แผนการเดินทางไป City 2<span class="sleep">🇨🇳 City 2</span></div>
+          <span class="chevron">▾</span>
+        </summary>
+        <div class="day-detail">
+          <ul>
+            <li>TODO: เติมสถานที่ท่องเที่ยว/แผนวัน</li>
+          </ul>
+        </div>
+      </details>
+    </div>
+
+  </div>
+
+</div>
+
+</div>
+
+<div id="panel-booking" class="tab-panel">
+<div class="wrap">
+
+  <div class="section-title">Booking List</div>
+
+  <div class="booking-group-title">✈️ ตั๋วเดินทาง (เครื่องบิน / รถไฟ)</div>
+
+  <div class="booking-list">
+
+    <div class="booking-row" style="--dot: var(--accent-a)">
+      <div class="dot"></div>
+      <div>
+        <div class="city">✈️ BKK → City 1</div>
+        <div class="nights">TBD · เที่ยวบินระหว่างประเทศ</div>
+        <div class="fields">
+          <div class="field"><span>ออกเดินทาง</span><b>Bangkok</b></div>
+          <div class="field"><span>ถึง</span><b>TBD</b></div>
+        </div>
+      </div>
+      <span class="status">ยังไม่จอง</span>
+    </div>
+
+    <div class="booking-row" style="--dot: var(--accent-b)">
+      <div class="dot"></div>
+      <div>
+        <div class="city">✈️ City 2 → BKK</div>
+        <div class="nights">TBD · เที่ยวบินระหว่างประเทศ</div>
+        <div class="fields">
+          <div class="field"><span>ออกเดินทาง</span><b>TBD</b></div>
+          <div class="field"><span>ถึง</span><b>Bangkok</b></div>
+        </div>
+      </div>
+      <span class="status">ยังไม่จอง</span>
+    </div>
+
+  </div>
+
+  <div class="booking-group-title">🏨 ที่พัก</div>
+
+  <div class="booking-list">
+
+    <div class="booking-row" style="--dot: var(--accent-a)">
+      <div class="dot"></div>
+      <div>
+        <div class="city">🇨🇳 City 1</div>
+        <div class="nights">TBD</div>
+        <div class="fields">
+          <div class="field"><span>ย่านแนะนำ</span><b>TBD</b></div>
+          <div class="field"><span>เช็คอิน</span><b>TBD</b></div>
+          <div class="field"><span>เช็คเอาท์</span><b>TBD</b></div>
+        </div>
+      </div>
+      <span class="status">ยังไม่จอง</span>
+    </div>
+
+    <div class="booking-row" style="--dot: var(--accent-b)">
+      <div class="dot"></div>
+      <div>
+        <div class="city">🇨🇳 City 2</div>
+        <div class="nights">TBD</div>
+        <div class="fields">
+          <div class="field"><span>ย่านแนะนำ</span><b>TBD</b></div>
+          <div class="field"><span>เช็คอิน</span><b>TBD</b></div>
+          <div class="field"><span>เช็คเอาท์</span><b>TBD</b></div>
+        </div>
+      </div>
+      <span class="status">ยังไม่จอง</span>
+    </div>
+
+  </div>
+
+</div>
+</div>
+
+<div id="panel-budget" class="tab-panel">
+<div class="wrap">
+
+  <div class="section-title">Budget estimate</div>
+
+  <div class="budget-table-wrap">
+  <table class="budget-table">
+    <thead>
+      <tr><th>หมวด</th><th>รายละเอียด</th><th>ประมาณการ (THB)</th></tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td class="cat">✈️ ตั๋วเครื่องบิน</td>
+        <td class="note">TBD</td>
+        <td>TBD</td>
+      </tr>
+      <tr>
+        <td class="cat">🚆 รถไฟ/รถทัวร์</td>
+        <td class="note">TBD</td>
+        <td>TBD</td>
+      </tr>
+      <tr>
+        <td class="cat">🏨 ที่พัก</td>
+        <td class="note">TBD</td>
+        <td>TBD</td>
+      </tr>
+      <tr>
+        <td class="cat">🍽️ อาหาร</td>
+        <td class="note">TBD</td>
+        <td>TBD</td>
+      </tr>
+      <tr>
+        <td class="cat">🎟️ กิจกรรม/สถานที่ท่องเที่ยว</td>
+        <td class="note">TBD</td>
+        <td>TBD</td>
+      </tr>
+      <tr>
+        <td class="cat">🚇 เดินทางในเมือง</td>
+        <td class="note">TBD</td>
+        <td>TBD</td>
+      </tr>
+      <tr>
+        <td class="cat">🧳 อื่นๆ / สำรอง</td>
+        <td class="note">TBD</td>
+        <td>TBD</td>
+      </tr>
+      <tr class="total">
+        <td colspan="2">รวมโดยประมาณ</td>
+        <td>TBD</td>
+      </tr>
+    </tbody>
+  </table>
+  </div>
+
+  <p class="budget-caption">ตัวเลขยังไม่ได้กรอก — อัปเดตหลังวางแผนเส้นทางและจองตั๋ว/ที่พักจริง</p>
+
+</div>
+</div>
+
+<footer>CHINA · TBD</footer>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/leaflet.min.js"></script>
+<script>
+  // TODO: replace with real cities once the route is finalized
+  const cities = [
+    { name: "Beijing",  lat: 39.9042, lng: 116.4074, color: "#f6c945" },
+    { name: "Shanghai", lat: 31.2304, lng: 121.4737, color: "#e0645a" }
+  ];
+
+  const map = L.map('map', {
+    zoomControl: true,
+    scrollWheelZoom: false,
+    attributionControl: true
+  }).setView([35.5, 105], 4);
+
+  L.tileLayer('https://{s}.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}{r}.png', {
+    attribution: '&copy; OpenStreetMap contributors &copy; CARTO',
+    subdomains: 'abcd',
+    maxZoom: 19
+  }).addTo(map);
+
+  const latlngs = cities.map(c => [c.lat, c.lng]);
+  const route = L.polyline(latlngs, {
+    color: '#6fe3c4',
+    weight: 2.5,
+    dashArray: '1, 10',
+    lineCap: 'round',
+    opacity: 0.85
+  }).addTo(map);
+
+  // animate dash offset for a traveling feel
+  let offset = 0;
+  setInterval(() => {
+    offset = (offset - 1 + 1000) % 1000;
+    route.setStyle({ dashOffset: String(offset) });
+  }, 60);
+
+  cities.forEach((c, i) => {
+    L.circleMarker([c.lat, c.lng], {
+      radius: 6,
+      color: c.color,
+      fillColor: c.color,
+      fillOpacity: 1,
+      weight: 2,
+      opacity: 1
+    })
+    .addTo(map)
+    .bindTooltip(c.name, { permanent: false, direction: 'top', offset: [0, -6] });
+  });
+
+  const bounds = L.latLngBounds(latlngs);
+  map.fitBounds(bounds, { padding: [40, 40] });
+
+  // Tab switching (remembers scroll position per tab)
+  const tabBtns = document.querySelectorAll('.tab-btn');
+  const tabPanels = document.querySelectorAll('.tab-panel');
+  const scrollPositions = {};
+  let currentTab = document.querySelector('.tab-btn.active').dataset.tab;
+  tabBtns.forEach(btn => {
+    btn.addEventListener('click', () => {
+      const newTab = btn.dataset.tab;
+      if (newTab === currentTab) return;
+      scrollPositions[currentTab] = window.scrollY;
+      tabBtns.forEach(b => b.classList.remove('active'));
+      tabPanels.forEach(p => p.classList.remove('active'));
+      btn.classList.add('active');
+      document.getElementById('panel-' + newTab).classList.add('active');
+      currentTab = newTab;
+      window.scrollTo(0, scrollPositions[newTab] || 0);
+      if (newTab === 'itinerary') {
+        setTimeout(() => map.invalidateSize(), 50);
+      }
+    });
+  });
+</script>
+
+</body>
+</html>
