@@ -928,36 +928,64 @@
   }).addTo(map);
 
   const latlngs = cities.map(c => [c.lat, c.lng]);
-  const route = L.polyline(latlngs, {
-    color: '#6fe3c4',
-    weight: 2.5,
-    dashArray: '1, 10',
-    lineCap: 'round',
-    opacity: 0.85
-  }).addTo(map);
 
-  // animate dash offset for a traveling feel
-  let offset = 0;
-  setInterval(() => {
-    offset = (offset - 1 + 1000) % 1000;
-    route.setStyle({ dashOffset: String(offset) });
-  }, 60);
+  async function fetchLegRoute(a, b) {
+    const url = `https://router.project-osrm.org/route/v1/driving/${a.lng},${a.lat};${b.lng},${b.lat}?overview=full&geometries=geojson`;
+    try {
+      const res = await fetch(url);
+      if (!res.ok) throw new Error('OSRM request failed');
+      const data = await res.json();
+      const coords = data.routes && data.routes[0] && data.routes[0].geometry.coordinates;
+      if (!coords || !coords.length) throw new Error('No route geometry');
+      return coords.map(([lng, lat]) => [lat, lng]);
+    } catch (err) {
+      console.warn('Falling back to straight line for leg', a.name, '→', b.name, err);
+      return [[a.lat, a.lng], [b.lat, b.lng]];
+    }
+  }
 
-  cities.forEach((c, i) => {
-    L.circleMarker([c.lat, c.lng], {
-      radius: 6,
-      color: c.color,
-      fillColor: c.color,
-      fillOpacity: 1,
-      weight: 2,
-      opacity: 1
-    })
-    .addTo(map)
-    .bindTooltip(c.name, { permanent: false, direction: 'top', offset: [0, -6] });
-  });
+  async function initRoute() {
+    const legs = await Promise.all(
+      cities.slice(0, -1).map((c, i) => fetchLegRoute(c, cities[i + 1]))
+    );
 
-  const bounds = L.latLngBounds(latlngs);
-  map.fitBounds(bounds, { padding: [40, 40] });
+    const routeCoords = legs.reduce((all, leg, i) => {
+      return all.concat(i === 0 ? leg : leg.slice(1));
+    }, []);
+
+    const route = L.polyline(routeCoords, {
+      color: '#6fe3c4',
+      weight: 2.5,
+      dashArray: '1, 10',
+      lineCap: 'round',
+      opacity: 0.85
+    }).addTo(map);
+
+    // animate dash offset for a traveling feel
+    let offset = 0;
+    setInterval(() => {
+      offset = (offset - 1 + 1000) % 1000;
+      route.setStyle({ dashOffset: String(offset) });
+    }, 60);
+
+    cities.forEach((c, i) => {
+      L.circleMarker([c.lat, c.lng], {
+        radius: 6,
+        color: c.color,
+        fillColor: c.color,
+        fillOpacity: 1,
+        weight: 2,
+        opacity: 1
+      })
+      .addTo(map)
+      .bindTooltip(c.name, { permanent: false, direction: 'top', offset: [0, -6] });
+    });
+
+    const bounds = L.latLngBounds(latlngs);
+    map.fitBounds(bounds, { padding: [40, 40] });
+  }
+
+  initRoute();
 
   // Tab switching (remembers scroll position per tab)
   const tabBtns = document.querySelectorAll('.tab-btn');
