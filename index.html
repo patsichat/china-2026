@@ -414,6 +414,78 @@
     .budget-table tr.total td{ padding-top: 0; border-top: none; }
   }
 
+  /* FOOD MAP */
+  .food-intro{
+    font-size: 13.5px;
+    color: var(--birch-dim);
+    line-height: 1.6;
+    max-width: 60ch;
+    margin: -8px 0 32px;
+  }
+  .food-row{
+    display: grid;
+    grid-template-columns: 4px 1fr;
+    gap: 18px;
+    padding: 18px 0;
+    border-bottom: 1px solid var(--line);
+  }
+  .food-row:last-child{ border-bottom: none; }
+  .food-row .dot{
+    align-self: stretch;
+    width: 4px;
+    border-radius: 2px;
+    background: var(--dot, var(--aurora-a));
+  }
+  .food-row .top{
+    display: flex;
+    justify-content: space-between;
+    align-items: baseline;
+    gap: 12px;
+    flex-wrap: wrap;
+    margin-bottom: 6px;
+  }
+  .food-row .name{
+    font-family:'Fraunces', serif;
+    font-size: 18px;
+    font-weight: 500;
+  }
+  .food-row .time{
+    font-family:'IBM Plex Mono', monospace;
+    font-size: 11px;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    color: var(--dot, var(--aurora-a));
+    white-space: nowrap;
+  }
+  .food-row .desc{
+    font-size: 13.5px;
+    line-height: 1.6;
+    color: var(--birch-dim);
+    margin: 0 0 10px;
+  }
+  .food-row .foot{
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    gap: 12px;
+    flex-wrap: wrap;
+  }
+  .food-row .area{
+    font-family:'IBM Plex Mono', monospace;
+    font-size: 11.5px;
+    color: var(--birch-dim);
+  }
+  .food-row .maplink{
+    font-family:'IBM Plex Mono', monospace;
+    font-size: 12px;
+    font-weight: 500;
+    color: var(--dot, var(--aurora-a));
+    text-decoration: none;
+    white-space: nowrap;
+  }
+  .food-row .maplink::after{ content: " →"; }
+  .food-row .maplink:hover{ text-decoration: underline; }
+
   /* NOTES */
   .notes{
     background: var(--panel);
@@ -467,6 +539,7 @@
   <button class="tab-btn active" data-tab="itinerary"><span class="icon">🗺️</span>Itinerary</button>
   <button class="tab-btn" data-tab="booking"><span class="icon">🧾</span>Booking List</button>
   <button class="tab-btn" data-tab="budget"><span class="icon">💰</span>Budget</button>
+  <button class="tab-btn" data-tab="food"><span class="icon">🌶️</span>Food Map</button>
 </nav>
 
 <div id="panel-itinerary" class="tab-panel active">
@@ -916,6 +989,246 @@
   </div>
 
   <p class="budget-caption">ทุกยอดในตารางคือยอดรวมสำหรับ 2 คน ไม่ใช่ต่อคน — ตั๋วเครื่องบินและที่พัก 9 คืนแรกจองแล้วจริง (รวม 27,884.90 บาท จากบิล) *คืนที่ 4 ของ Dongfang Lizhi Hotel (Dec 13–14, ~1,453 บาท) ยังไม่ได้จอง ส่วนที่เหลือเป็นประมาณการจากงบประมาณรายวันในแผน (~35,000–41,000 บาท/คน) ควรอัปเดตหลังจองรถไฟ/ทัวร์วันเดียวจริง</p>
+
+</div>
+</div>
+
+<div id="panel-food" class="tab-panel">
+<div class="wrap">
+
+  <div class="section-title">Chongqing food map</div>
+
+  <p class="food-intro">14 พิกัดร้านที่น่าไปในฉงชิ่ง จัดกลุ่มตามโซนที่ตั้งกับช่วงเวลาที่เหมาะไปเที่ยว ไว้เลือกสอดแทรกเข้าวัน Dec 4–7 ตามเวลาที่มีจริง — กดลิงก์เพื่อเปิดใน Amap</p>
+
+  <div class="booking-group-title">📍 ย่านเจี่ยฟางเปย์ (解放碑) &amp; The Ring</div>
+
+  <div class="booking-list">
+
+    <div class="food-row" style="--dot: var(--accent-a)">
+      <div class="dot"></div>
+      <div>
+        <div class="top">
+          <span class="name">老烧饼夹心熨斗糕</span>
+          <span class="time">เช้า · ของว่าง</span>
+        </div>
+        <p class="desc">ขนมแป้งอบไส้สไตล์เก่าแก่ อบด้วยเตาทรงเตารีดแบบดั้งเดิม กินเล่นระหว่างเดินได้เลย เหมาะเป็นมื้อเช้าเบาๆ</p>
+        <div class="foot">
+          <span class="area">Yuzhong · ย่านเมืองเก่า</span>
+          <a class="maplink" href="https://www.amap.com/place/B00179BX00" target="_blank" rel="noopener">เปิดใน Amap</a>
+        </div>
+      </div>
+    </div>
+
+    <div class="food-row" style="--dot: var(--accent-a)">
+      <div class="dot"></div>
+      <div>
+        <div class="top">
+          <span class="name">温馨缘面庄</span>
+          <span class="time">กลางวัน · บะหมี่</span>
+        </div>
+        <p class="desc">ร้านบะหมี่เล็กๆ บรรยากาศอบอุ่นแบบร้านประจำท้องถิ่น เมนูเส้นสไตล์ฉงชิ่ง เผ็ดกำลังดี ราคาย่อมเยา</p>
+        <div class="foot">
+          <span class="area">Yuzhong</span>
+          <a class="maplink" href="https://www.amap.com/place/B0FFFAL8E1" target="_blank" rel="noopener">เปิดใน Amap</a>
+        </div>
+      </div>
+    </div>
+
+    <div class="food-row" style="--dot: var(--accent-a)">
+      <div class="dot"></div>
+      <div>
+        <div class="top">
+          <span class="name">山城羊肉馆</span>
+          <span class="time">กลางวัน (ทางเลือก) · หม้อไฟแกะ</span>
+        </div>
+        <p class="desc">ร้านเนื้อแกะขึ้นชื่อของฉงชิ่ง ซดน้ำซุปร้อนๆ ใส่เครื่องเทศ อร่อยมากช่วงอากาศเย็น — เหมาะสลับกับ 温馨缘面庄</p>
+        <div class="foot">
+          <span class="area">Yuzhong</span>
+          <a class="maplink" href="https://www.amap.com/place/B00170CPWH" target="_blank" rel="noopener">เปิดใน Amap</a>
+        </div>
+      </div>
+    </div>
+
+    <div class="food-row" style="--dot: var(--accent-a)">
+      <div class="dot"></div>
+      <div>
+        <div class="top">
+          <span class="name">The Ring 重庆光环购物公园</span>
+          <span class="time">บ่าย · ช้อปปิ้ง</span>
+        </div>
+        <p class="desc">ห้างสรรพสินค้าดีไซน์ทันสมัย มีร้านแบรนด์และคาเฟ่เพียบ เหมาะพักขาช่วงบ่ายแดดแรง</p>
+        <div class="foot">
+          <span class="area">Yuzhong · Daping</span>
+          <a class="maplink" href="https://www.amap.com/place/B0G0XNX46G" target="_blank" rel="noopener">เปิดใน Amap</a>
+        </div>
+      </div>
+    </div>
+
+    <div class="food-row" style="--dot: var(--accent-a)">
+      <div class="dot"></div>
+      <div>
+        <div class="top">
+          <span class="name">CREPES CAKE</span>
+          <span class="time">บ่ายแก่ · ของหวาน</span>
+        </div>
+        <p class="desc">ร้านเครป/เค้กสไตล์คาเฟ่ แวะพักหวานๆ ระหว่างช้อปปิ้ง นั่งชิลถ่ายรูปคั่นก่อนมื้อเย็น</p>
+        <div class="foot">
+          <span class="area">ใกล้โซน The Ring</span>
+          <a class="maplink" href="https://www.amap.com/place/B0HDO55YKF" target="_blank" rel="noopener">เปิดใน Amap</a>
+        </div>
+      </div>
+    </div>
+
+    <div class="food-row" style="--dot: var(--accent-a)">
+      <div class="dot"></div>
+      <div>
+        <div class="top">
+          <span class="name">月半(解放碑总店)</span>
+          <span class="time">เย็น · มื้อหลัก</span>
+        </div>
+        <p class="desc">สาขาใหญ่ใจกลางย่านเจี่ยฟางเปย์ เหมาะเป็นมื้อเย็นหลัก เดินจากตัวห้างและถนนช้อปปิ้งได้สบาย</p>
+        <div class="foot">
+          <span class="area">解放碑 Jiefangbei</span>
+          <a class="maplink" href="https://www.amap.com/place/B0FFIY2MAE" target="_blank" rel="noopener">เปิดใน Amap</a>
+        </div>
+      </div>
+    </div>
+
+    <div class="food-row" style="--dot: var(--accent-a)">
+      <div class="dot"></div>
+      <div>
+        <div class="top">
+          <span class="name">茶颜悦色</span>
+          <span class="time">ค่ำ · ชานม</span>
+        </div>
+        <p class="desc">เชนชานมชื่อดังจากฉางซา แวะปิดท้ายมื้อเย็นด้วยชาแก้วโปรด นั่งเล่นย่านไฟสวยยามค่ำคืน</p>
+        <div class="foot">
+          <span class="area">解放碑 ใกล้เคียง</span>
+          <a class="maplink" href="https://www.amap.com/place/B0K0SX9FVR" target="_blank" rel="noopener">เปิดใน Amap</a>
+        </div>
+      </div>
+    </div>
+
+  </div>
+
+  <div class="booking-group-title">🌉 เมืองเก่าริมแม่น้ำ &amp; วิวพระอาทิตย์ตก (储奇门 → Nan'an)</div>
+
+  <div class="booking-list">
+
+    <div class="food-row" style="--dot: var(--accent-b)">
+      <div class="dot"></div>
+      <div>
+        <div class="top">
+          <span class="name">储奇门鳝鱼火锅(总店)</span>
+          <span class="time">กลางวัน · หม้อไฟปลาไหล</span>
+        </div>
+        <p class="desc">หม้อไฟปลาไหลสูตรดั้งเดิม ร้านต้นตำรับใกล้ประตูเมืองเก่า储奇门 รสจัดจ้านแบบฉงชิ่งแท้ๆ</p>
+        <div class="foot">
+          <span class="area">储奇门 Chuqimen, Yuzhong</span>
+          <a class="maplink" href="https://www.amap.com/place/B001797K64" target="_blank" rel="noopener">เปิดใน Amap</a>
+        </div>
+      </div>
+    </div>
+
+    <div class="food-row" style="--dot: var(--accent-b)">
+      <div class="dot"></div>
+      <div>
+        <div class="top">
+          <span class="name">เมืองโบราณ（西陲古镇 ประตูทิศตะวันตกเฉียงใต้）</span>
+          <span class="time">บ่าย · เมืองโบราณ</span>
+        </div>
+        <p class="desc">เดินเล่นชมสถาปัตยกรรมโบราณ ถ่ายรูปตึกเก่า ร้านค้าและของที่ระลึกสไตล์จีนดั้งเดิม ใช้เวลาสัก 1–2 ชม.</p>
+        <div class="foot">
+          <span class="area">ไม่ไกลจากโซนเมืองเก่า</span>
+          <a class="maplink" href="https://www.amap.com/place/B0H19RLI4O" target="_blank" rel="noopener">เปิดใน Amap</a>
+        </div>
+      </div>
+    </div>
+
+    <div class="food-row" style="--dot: var(--accent-b)">
+      <div class="dot"></div>
+      <div>
+        <div class="top">
+          <span class="name">龙门浩老街</span>
+          <span class="time">เย็นก่อนตะวันตก · ถนนเก่าริมน้ำ</span>
+        </div>
+        <p class="desc">ข้ามฝั่งมา Nan'an เดินเล่นถนนเก่าริมแม่น้ำแยงซี มุมถ่ายรูปวิวตึกสูงฝั่งตรงข้ามสวยมาก ช่วงแดดร่มลมตก</p>
+        <div class="foot">
+          <span class="area">Nan'an · ฝั่งใต้แม่น้ำ</span>
+          <a class="maplink" href="https://www.amap.com/place/B0FFJ0756U" target="_blank" rel="noopener">เปิดใน Amap</a>
+        </div>
+      </div>
+    </div>
+
+    <div class="food-row" style="--dot: var(--accent-b)">
+      <div class="dot"></div>
+      <div>
+        <div class="top">
+          <span class="name">落日野茶集</span>
+          <span class="time">ค่ำ · ชาวิวตะวันตก</span>
+        </div>
+        <p class="desc">ชื่อร้านแปลตรงตัวว่า "ชาป่ายามตะวันตกดิน" นั่งจิบชาชมพระอาทิตย์ตกริมเขา/แม่น้ำ บรรยากาศดีที่สุดของโซนนี้ ไปให้ทันช่วงโพล้เพล้</p>
+        <div class="foot">
+          <span class="area">Nan'an</span>
+          <a class="maplink" href="https://www.amap.com/place/B0IRZM0YFS" target="_blank" rel="noopener">เปิดใน Amap</a>
+        </div>
+      </div>
+    </div>
+
+  </div>
+
+  <div class="booking-group-title">🍲 หม้อไฟ &amp; ของกินท้องถิ่นอื่นๆ</div>
+
+  <div class="booking-list">
+
+    <div class="food-row" style="--dot: var(--accent-c)">
+      <div class="dot"></div>
+      <div>
+        <div class="top">
+          <span class="name">巴將軍非遺原味火鍋</span>
+          <span class="time">ดึก · หม้อไฟ</span>
+        </div>
+        <p class="desc">หม้อไฟสูตรมรดกภูมิปัญญา รสชาติต้นตำรับไม่ปรุงแต่งมาก เหมาะปิดท้ายวันด้วยมื้อหม้อไฟแบบฉงชิ่งแท้ๆ</p>
+        <div class="foot">
+          <span class="area">Yuzhong</span>
+          <a class="maplink" href="https://www.amap.com/place/B0FFIGI83C" target="_blank" rel="noopener">เปิดใน Amap</a>
+        </div>
+      </div>
+    </div>
+
+    <div class="food-row" style="--dot: var(--accent-c)">
+      <div class="dot"></div>
+      <div>
+        <div class="top">
+          <span class="name">洞亭火锅(防空洞店)</span>
+          <span class="time">เย็น · หม้อไฟในหลุมหลบภัย</span>
+        </div>
+        <p class="desc">คอนเซปต์เด็ด — ร้านหม้อไฟดัดแปลงจากหลุมหลบภัยทางอากาศยุคสงคราม บรรยากาศเฉพาะตัวหาที่ไหนไม่ได้</p>
+        <div class="foot">
+          <span class="area">Yuzhong</span>
+          <a class="maplink" href="https://www.amap.com/place/B0FFFRGA5T" target="_blank" rel="noopener">เปิดใน Amap</a>
+        </div>
+      </div>
+    </div>
+
+    <div class="food-row" style="--dot: var(--accent-c)">
+      <div class="dot"></div>
+      <div>
+        <div class="top">
+          <span class="name">人和水上飘</span>
+          <span class="time">กลางวัน/เย็น · เส้น/หม้อไฟท้องถิ่น</span>
+        </div>
+        <p class="desc">ร้านเมนูเส้น/หม้อไฟสไตล์ท้องถิ่นที่คนพื้นที่กินประจำ ราคาเป็นมิตร รสชาติเข้มข้นแบบไม่ปรุงหวานตามนักท่องเที่ยว</p>
+        <div class="foot">
+          <span class="area">Jiangbei</span>
+          <a class="maplink" href="https://www.amap.com/place/B0HDGAM2N5" target="_blank" rel="noopener">เปิดใน Amap</a>
+        </div>
+      </div>
+    </div>
+
+  </div>
+
+  <p class="budget-caption">⚠️ ยืนยันพิกัด/ระยะทางจริงในแอป Amap อีกรอบก่อนวางเส้นทางเป๊ะๆ — ร้านกลุ่มนี้ยังไม่ได้ผูกกับวันใดวันหนึ่งตายตัว เลือกสอดแทรกเข้า Dec 4 เย็น, Dec 5 เต็มวัน หรือ Dec 7 เช้าก่อนออกเดินทางไปจิ่วจ้ายโกวได้ตามเวลาที่เหลือจริง</p>
 
 </div>
 </div>
